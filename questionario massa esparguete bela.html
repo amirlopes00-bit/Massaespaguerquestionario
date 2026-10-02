@@ -1,0 +1,465 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Questionário – Massa Esparguete Bela | MEREC Industries</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,800&family=Figtree:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --trigo:#F0B323;
+    --trigo-claro:#FFF4CC;
+    --noite:#17233B;
+    --tomate:#C93A26;
+    --verde:#2F7D4F;
+    --linha:#D9DCE3;
+    --fundo:#FFFFFF;
+  }
+  *{box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{
+    margin:0;background:var(--fundo);color:var(--noite);
+    font-family:"Figtree",system-ui,sans-serif;font-size:17px;line-height:1.55;
+  }
+  h1,h2,h3{font-family:"Bricolage Grotesque","Figtree",sans-serif;margin:0;line-height:1.1}
+
+  /* Cabeçalho */
+  .topo{
+    background:
+      repeating-linear-gradient(90deg, rgba(23,35,59,.10) 0 2px, transparent 2px 22px),
+      var(--trigo);
+    padding:56px 20px 44px;
+  }
+  .topo-in{max-width:720px;margin:0 auto}
+  .topo h1{font-size:clamp(2.4rem,8vw,4.2rem);font-weight:800;letter-spacing:-.02em}
+  .topo .sub{margin:14px 0 0;font-size:1.05rem;font-weight:600}
+  .aviso{
+    max-width:720px;margin:0 auto;padding:22px 20px 0;
+  }
+  .aviso p{margin:0;max-width:62ch}
+
+  main{max-width:720px;margin:0 auto;padding:8px 20px 80px}
+
+  /* Barra de progresso */
+  .progresso{
+    position:sticky;top:0;z-index:5;background:var(--fundo);
+    padding:12px 0 10px;border-bottom:1px solid var(--linha);margin-bottom:8px;
+    display:none;
+  }
+  .progresso.ativo{display:block}
+  .progresso-texto{font-size:.9rem;font-weight:600;display:flex;justify-content:space-between}
+  .barra{height:6px;background:var(--linha);border-radius:3px;margin-top:6px;overflow:hidden}
+  .barra i{display:block;height:100%;width:0;background:var(--noite);transition:width .3s}
+
+  /* Secções */
+  section{padding-top:34px}
+  section h2{font-size:1.55rem;font-weight:800;margin-bottom:6px}
+  section h3{font-size:1.15rem;font-weight:800;margin:30px 0 4px;padding-top:18px;border-top:2px solid var(--noite)}
+  .nota{margin:0 0 6px;font-size:.95rem}
+
+  /* Escolha de função */
+  .funcoes{display:grid;gap:10px;margin-top:16px}
+  .funcao{position:relative}
+  .funcao input{position:absolute;opacity:0;inset:0;cursor:pointer}
+  .funcao span{
+    display:block;padding:16px 18px;border:2px solid var(--noite);border-radius:10px;
+    font-weight:600;background:#fff;transition:background .15s,color .15s;
+  }
+  .funcao input:checked + span{background:var(--noite);color:#fff}
+  .funcao input:focus-visible + span{outline:3px solid var(--trigo);outline-offset:2px}
+  .funcao:hover span{background:var(--trigo-claro)}
+  .funcao input:checked + span:hover{background:var(--noite)}
+
+  /* Perguntas */
+  .pergunta{margin:24px 0;padding:0;border:0}
+  .pergunta legend{font-weight:600;padding:0;margin-bottom:10px;max-width:60ch}
+  .pergunta.erro legend{color:var(--tomate)}
+  .pergunta.erro .opcoes label span{border-color:var(--tomate)}
+  .msg-erro{display:none;color:var(--tomate);font-size:.9rem;margin-top:6px;font-weight:600}
+  .pergunta.erro .msg-erro{display:block}
+  .opcoes{display:flex;flex-wrap:wrap;gap:8px}
+  .opcoes label{position:relative}
+  .opcoes input{position:absolute;opacity:0;inset:0;cursor:pointer;width:100%;height:100%;margin:0}
+  .opcoes label span{
+    display:block;padding:10px 18px;border:2px solid var(--linha);border-radius:999px;
+    font-weight:500;background:#fff;transition:background .15s,border-color .15s,color .15s;
+  }
+  .opcoes label:hover span{border-color:var(--noite)}
+  .opcoes input:checked + span{background:var(--noite);border-color:var(--noite);color:#fff}
+  .opcoes input:focus-visible + span{outline:3px solid var(--trigo);outline-offset:2px}
+
+  /* Botões */
+  .btn{
+    font:inherit;font-weight:600;cursor:pointer;border:2px solid var(--noite);
+    background:var(--noite);color:#fff;padding:14px 26px;border-radius:10px;
+  }
+  .btn:hover{background:#0f1829}
+  .btn.sec{background:#fff;color:var(--noite)}
+  .btn.sec:hover{background:var(--trigo-claro)}
+  .btn:focus-visible{outline:3px solid var(--trigo);outline-offset:2px}
+  .btn[disabled]{opacity:.6;cursor:wait}
+  .acoes{margin-top:36px}
+
+  /* Fim */
+  #fim{display:none}
+  #fim.ativo{display:block}
+  #fim .ok{
+    background:var(--trigo-claro);border-left:6px solid var(--trigo);
+    padding:20px 22px;border-radius:0 10px 10px 0;margin-top:20px;
+  }
+  #fim .ok p{margin:0 0 6px}
+  .envio{display:flex;flex-wrap:wrap;gap:10px;margin-top:20px}
+  .resumo{margin-top:26px;border-top:2px solid var(--noite)}
+  .resumo dl{margin:0}
+  .resumo div{padding:12px 0;border-bottom:1px solid var(--linha)}
+  .resumo dt{font-weight:600}
+  .resumo dd{margin:2px 0 0}
+  .estado{margin-top:14px;font-weight:600;min-height:1.5em}
+  .estado.bom{color:var(--verde)}
+  .estado.mau{color:var(--tomate)}
+
+  .rodape{max-width:720px;margin:0 auto;padding:0 20px 40px;font-size:.85rem;opacity:.75}
+
+  @media (prefers-reduced-motion:reduce){
+    html{scroll-behavior:auto}
+    *{transition:none!important}
+  }
+</style>
+</head>
+<body>
+
+<header class="topo">
+  <div class="topo-in">
+    <h1>Massa Esparguete Bela</h1>
+    <p class="sub">MEREC Industries · Levantamento de evidências</p>
+  </div>
+</header>
+
+<div class="aviso">
+  <p>Este questionário recolhe informação sobre os factores do ambiente de negócios que influenciam a cadeia de fornecimento da Massa Esparguete Bela. Destina-se exclusivamente a fins académicos. Todas as perguntas são fechadas: escolha apenas uma opção em cada.</p>
+</div>
+
+<main>
+  <div class="progresso" id="progresso" aria-live="polite">
+    <div class="progresso-texto"><span id="prog-texto">0 de 0 respondidas</span><span id="prog-pct">0%</span></div>
+    <div class="barra"><i id="prog-barra"></i></div>
+  </div>
+
+  <form id="form" novalidate>
+    <section id="parte1">
+      <h2>Parte 1 – Identificação do interveniente</h2>
+      <fieldset class="pergunta" id="q-funcao" style="margin-top:18px">
+        <legend>Qual é a sua função na cadeia de fornecimento da Massa Esparguete Bela?</legend>
+        <div class="funcoes" id="funcoes"></div>
+        <div class="msg-erro">Escolha a sua função para continuar.</div>
+      </fieldset>
+    </section>
+
+    <div id="dinamico"></div>
+
+    <div class="acoes" id="acoes" style="display:none">
+      <button type="submit" class="btn">Submeter respostas</button>
+    </div>
+  </form>
+
+  <section id="fim" aria-live="polite">
+    <h2>Obrigado pela sua participação</h2>
+    <div class="ok">
+      <p id="fim-msg">As suas respostas foram registadas.</p>
+    </div>
+    <div class="envio" id="envio"></div>
+    <div class="estado" id="estado"></div>
+    <div class="resumo">
+      <h3 style="border:0;padding-top:20px;margin-top:0">As suas respostas</h3>
+      <dl id="resumo"></dl>
+    </div>
+  </section>
+</main>
+
+<p class="rodape">Questionário EMPREEND 12 · uso exclusivamente académico.</p>
+
+<script>
+/* ============ CONFIGURAÇÃO (opcional) ============
+   Para receber as respostas, preencha uma ou mais opções:
+
+   ENDPOINT  → link do Formspree (ex.: "https://formspree.io/f/xxxxxxx").
+               Cada resposta chega ao seu email automaticamente.
+   WHATSAPP  → número com indicativo, sem + nem espaços (ex.: "258841234567").
+               Aparece um botão para o respondente enviar as respostas.
+   EMAIL     → o seu email; aparece um botão "Enviar por email".
+   Se deixar tudo vazio, o respondente só pode descarregar/copiar as respostas.
+*/
+const CONFIG = {
+  ENDPOINT: "",
+  WHATSAPP: "",
+  EMAIL: ""
+};
+
+/* ============ DADOS DO QUESTIONÁRIO ============ */
+const FUNCOES = [
+  {id:"fornecedor",  nome:"Fornecedor de insumos"},
+  {id:"produtor",    nome:"Produtor"},
+  {id:"distribuidor",nome:"Distribuidor"},
+  {id:"retalhista",  nome:"Retalhista"},
+  {id:"consumidor",  nome:"Consumidor final"}
+];
+
+const PARTES = {
+  fornecedor:{
+    titulo:"Parte 2 – Fornecedor de insumos",
+    grupos:[
+      {nome:"Registo de propriedades", perguntas:[
+        {t:"Como considera o tempo necessário para regularizar uma propriedade utilizada no seu negócio?", o:["Curto","Moderado","Longo"]},
+        {t:"Como considera o custo de regularização de propriedades?", o:["Baixo","Moderado","Alto"]},
+        {t:"Como avalia a facilidade dos procedimentos de registo de propriedades?", o:["Fácil","Moderada","Difícil"]}
+      ]},
+      {nome:"Pagamento de impostos", perguntas:[
+        {t:"Como considera o tempo necessário para cumprir as obrigações fiscais?", o:["Pouco","Moderado","Muito"]},
+        {t:"Como considera os custos relacionados com o pagamento de impostos?", o:["Baixos","Moderados","Altos"]},
+        {t:"Como considera os procedimentos para o pagamento de impostos?", o:["Simples","Moderados","Complexos"]}
+      ]}
+    ]
+  },
+  produtor:{
+    titulo:"Parte 3 – Produtor (MEREC Industries)",
+    grupos:[
+      {nome:"Acesso à electricidade", perguntas:[
+        {t:"Como avalia a disponibilidade de energia eléctrica para a produção?", o:["Alta","Média","Baixa"]},
+        {t:"Com que frequência ocorrem interrupções de energia que afectam a produção?", o:["Raramente","Às vezes","Frequentemente"]},
+        {t:"Como considera o custo da electricidade para a produção?", o:["Baixo","Moderado","Alto"]}
+      ]},
+      {nome:"Pagamento de impostos", perguntas:[
+        {t:"Como considera o tempo necessário para cumprir as obrigações fiscais da empresa?", o:["Pouco","Moderado","Muito"]},
+        {t:"Como considera os custos associados ao cumprimento das obrigações fiscais?", o:["Baixos","Moderados","Altos"]},
+        {t:"Como avalia os procedimentos para o pagamento de impostos?", o:["Simples","Moderados","Complexos"]}
+      ]},
+      {nome:"Registo de propriedades", perguntas:[
+        {t:"Como considera o tempo necessário para o registo de propriedades da empresa?", o:["Curto","Moderado","Longo"]},
+        {t:"Como considera o custo de formalização das propriedades?", o:["Baixo","Moderado","Alto"]},
+        {t:"Como avalia os procedimentos de registo de propriedades?", o:["Simples","Moderados","Complexos"]}
+      ]}
+    ]
+  },
+  distribuidor:{
+    titulo:"Parte 4 – Distribuidor",
+    grupos:[
+      {nome:"Mercado de produtos", perguntas:[
+        {t:"Como considera a concorrência no mercado de produtos alimentares?", o:["Baixa","Média","Alta"]},
+        {t:"Como avalia a procura pela Massa Esparguete Bela?", o:["Baixa","Média","Alta"]},
+        {t:"Como considera a facilidade de entrada no mercado de distribuição?", o:["Fácil","Moderada","Difícil"]}
+      ]},
+      {nome:"Acesso ao financiamento", perguntas:[
+        {t:"Como considera a disponibilidade de crédito para o seu negócio?", o:["Alta","Média","Baixa"]},
+        {t:"Como considera o custo do financiamento?", o:["Baixo","Moderado","Alto"]},
+        {t:"Como considera a facilidade de obter financiamento?", o:["Fácil","Moderada","Difícil"]}
+      ]}
+    ]
+  },
+  retalhista:{
+    titulo:"Parte 5 – Retalhista",
+    grupos:[
+      {nome:"Mercado de produtos", perguntas:[
+        {t:"Como considera a concorrência entre as marcas de massa esparguete?", o:["Baixa","Média","Alta"]},
+        {t:"Como avalia a procura pela Massa Esparguete Bela?", o:["Baixa","Média","Alta"]},
+        {t:"Como considera a facilidade de entrada de novos produtos no mercado?", o:["Fácil","Moderada","Difícil"]}
+      ]},
+      {nome:"Acesso ao financiamento", perguntas:[
+        {t:"Como considera a disponibilidade de crédito para o seu negócio?", o:["Alta","Média","Baixa"]},
+        {t:"Como considera o custo do financiamento?", o:["Baixo","Moderado","Alto"]},
+        {t:"Como considera a facilidade de obter financiamento para o seu negócio?", o:["Fácil","Moderada","Difícil"]}
+      ]}
+    ]
+  },
+  consumidor:{
+    titulo:"Parte 6 – Consumidor final",
+    grupos:[
+      {nome:"Mercado de produtos", perguntas:[
+        {t:"Com que frequência compra Massa Esparguete Bela?", o:["Raramente","Às vezes","Frequentemente"]},
+        {t:"Como considera a variedade de marcas de massa esparguete disponíveis?", o:["Baixa","Média","Alta"]},
+        {t:"Como considera a facilidade de encontrar Massa Esparguete Bela onde faz compras?", o:["Fácil","Moderada","Difícil"]}
+      ]}
+    ]
+  }
+};
+
+/* ============ ESTADO ============ */
+const $ = s => document.querySelector(s);
+const form = $("#form"), dinamico = $("#dinamico");
+let funcaoAtual = null;
+let registo = []; // {grupo, pergunta, resposta}
+
+/* ============ FUNÇÃO (PARTE 1) ============ */
+$("#funcoes").innerHTML = FUNCOES.map(f =>
+  `<label class="funcao"><input type="radio" name="funcao" value="${f.id}" required><span>${f.nome}</span></label>`
+).join("");
+
+form.addEventListener("change", e => {
+  if(e.target.name === "funcao"){
+    funcaoAtual = e.target.value;
+    $("#q-funcao").classList.remove("erro");
+    construirParte(funcaoAtual);
+  }
+  atualizarProgresso();
+  const fs = e.target.closest(".pergunta");
+  if(fs) fs.classList.remove("erro");
+});
+
+function construirParte(id){
+  const p = PARTES[id];
+  let n = 0, html = `<section><h2>${p.titulo}</h2>`;
+  p.grupos.forEach(g => {
+    html += `<h3>${g.nome}</h3>`;
+    g.perguntas.forEach(q => {
+      n++;
+      html += `
+      <fieldset class="pergunta" data-grupo="${g.nome}" data-texto="${q.t.replace(/"/g,'&quot;')}">
+        <legend>${n}. ${q.t}</legend>
+        <div class="opcoes">
+          ${q.o.map(o => `<label><input type="radio" name="q${n}" value="${o}"><span>${o}</span></label>`).join("")}
+        </div>
+        <div class="msg-erro">Escolha uma opção.</div>
+      </fieldset>`;
+    });
+  });
+  html += `</section>`;
+  dinamico.innerHTML = html;
+  $("#acoes").style.display = "block";
+  $("#progresso").classList.add("ativo");
+  atualizarProgresso();
+  const alvo = dinamico.querySelector("section");
+  if(alvo) setTimeout(() => alvo.scrollIntoView({behavior:"smooth", block:"start"}), 50);
+}
+
+/* ============ PROGRESSO ============ */
+function atualizarProgresso(){
+  const perguntas = [...document.querySelectorAll("#dinamico .pergunta")];
+  const total = perguntas.length + 1;                       // + função
+  const feitas = perguntas.filter(p => p.querySelector("input:checked")).length + (funcaoAtual ? 1 : 0);
+  const pct = total ? Math.round(feitas / total * 100) : 0;
+  $("#prog-texto").textContent = `${feitas} de ${total} respondidas`;
+  $("#prog-pct").textContent = pct + "%";
+  $("#prog-barra").style.width = pct + "%";
+}
+
+/* ============ SUBMISSÃO ============ */
+form.addEventListener("submit", async e => {
+  e.preventDefault();
+
+  if(!funcaoAtual){
+    $("#q-funcao").classList.add("erro");
+    $("#q-funcao").scrollIntoView({behavior:"smooth", block:"center"});
+    return;
+  }
+
+  const perguntas = [...document.querySelectorAll("#dinamico .pergunta")];
+  let primeiraEmFalta = null;
+  perguntas.forEach(p => {
+    if(!p.querySelector("input:checked")){
+      p.classList.add("erro");
+      if(!primeiraEmFalta) primeiraEmFalta = p;
+    }
+  });
+  if(primeiraEmFalta){
+    primeiraEmFalta.scrollIntoView({behavior:"smooth", block:"center"});
+    return;
+  }
+
+  const funcaoNome = FUNCOES.find(f => f.id === funcaoAtual).nome;
+  registo = perguntas.map(p => ({
+    grupo: p.dataset.grupo,
+    pergunta: p.dataset.texto,
+    resposta: p.querySelector("input:checked").value
+  }));
+
+  const botao = form.querySelector("button[type=submit]");
+  botao.disabled = true;
+
+  let enviado = false, falhou = false;
+  if(CONFIG.ENDPOINT){
+    try{
+      const payload = {
+        data: new Date().toLocaleString("pt-PT"),
+        funcao: funcaoNome
+      };
+      registo.forEach((r,i) => payload[`P${i+1} (${r.grupo})`] = r.resposta);
+      const resp = await fetch(CONFIG.ENDPOINT, {
+        method:"POST",
+        headers:{"Content-Type":"application/json","Accept":"application/json"},
+        body: JSON.stringify(payload)
+      });
+      if(resp.ok) enviado = true; else falhou = true;
+    }catch(_){ falhou = true; }
+  }
+
+  mostrarFim(funcaoNome, enviado, falhou);
+});
+
+function textoResumo(funcaoNome){
+  let t = `Questionário – Massa Esparguete Bela (MEREC Industries)\nFunção: ${funcaoNome}\n\n`;
+  registo.forEach((r,i) => { t += `${i+1}. ${r.pergunta}\n   → ${r.resposta}\n`; });
+  return t;
+}
+
+function mostrarFim(funcaoNome, enviado, falhou){
+  form.style.display = "none";
+  $("#progresso").classList.remove("ativo");
+  $("#fim").classList.add("ativo");
+
+  $("#fim-msg").textContent = enviado
+    ? "As suas respostas foram enviadas com sucesso."
+    : "As suas respostas foram registadas.";
+
+  $("#resumo").innerHTML =
+    `<div><dt>Função</dt><dd>${funcaoNome}</dd></div>` +
+    registo.map((r,i) => `<div><dt>${i+1}. ${r.pergunta}</dt><dd>${r.resposta}</dd></div>`).join("");
+
+  const envio = $("#envio");
+  const texto = textoResumo(funcaoNome);
+  const botoes = [];
+
+  if(CONFIG.WHATSAPP){
+    botoes.push(`<a class="btn" style="text-decoration:none;display:inline-block" target="_blank" rel="noopener"
+      href="https://wa.me/${CONFIG.WHATSAPP}?text=${encodeURIComponent(texto)}">Enviar por WhatsApp</a>`);
+  }
+  if(CONFIG.EMAIL){
+    botoes.push(`<a class="btn" style="text-decoration:none;display:inline-block"
+      href="mailto:${CONFIG.EMAIL}?subject=${encodeURIComponent("Questionário Massa Esparguete Bela")}&body=${encodeURIComponent(texto)}">Enviar por email</a>`);
+  }
+  botoes.push(`<button type="button" class="btn sec" id="b-copiar">Copiar respostas</button>`);
+  botoes.push(`<button type="button" class="btn sec" id="b-csv">Descarregar CSV</button>`);
+  envio.innerHTML = botoes.join("");
+
+  $("#b-copiar").onclick = async () => {
+    try{ await navigator.clipboard.writeText(texto); estado("Respostas copiadas.", true); }
+    catch(_){ estado("Não foi possível copiar. Seleccione o texto abaixo manualmente.", false); }
+  };
+  $("#b-csv").onclick = () => descarregarCSV(funcaoNome);
+
+  if(enviado) estado("Envio automático concluído.", true);
+  if(falhou) estado("Não foi possível enviar automaticamente. Use um dos botões acima para entregar as suas respostas.", false);
+
+  window.scrollTo({top:0, behavior:"smooth"});
+}
+
+function estado(msg, bom){
+  const el = $("#estado");
+  el.textContent = msg;
+  el.className = "estado " + (bom ? "bom" : "mau");
+}
+
+function descarregarCSV(funcaoNome){
+  const esc = v => `"${String(v).replace(/"/g,'""')}"`;
+  const data = new Date().toLocaleString("pt-PT");
+  const linhas = [["Data","Função","Grupo","Pergunta","Resposta"].map(esc).join(";")];
+  registo.forEach(r => linhas.push([data, funcaoNome, r.grupo, r.pergunta, r.resposta].map(esc).join(";")));
+  const blob = new Blob(["\uFEFF" + linhas.join("\n")], {type:"text/csv;charset=utf-8;"});
+  const a = document.createElement("a");
+  a.href = URL.createObjectURL(blob);
+  a.download = "respostas_massa_esparguete_bela.csv";
+  document.body.appendChild(a); a.click(); a.remove();
+}
+</script>
+</body>
+</html>
